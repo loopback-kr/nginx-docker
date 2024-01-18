@@ -1,5 +1,5 @@
-FROM nginx:1.25.3 AS builder
-ARG NGINX_VERSION 1.25.3
+FROM nginx:1.23.4 AS builder
+ARG NGINX_VERSION 1.23.4
 
 # Install packages
 RUN apt update -qq && apt install -qqy \
@@ -32,7 +32,9 @@ RUN cd /usr/src/nginx-$NGINX_VERSION && \
     ./configure --with-compat $CONFARGS --add-dynamic-module=/usr/src/ngx_http_proxy_connect_module && \
     make && make install
 
-FROM nginx:1.25.3
+FROM nginx:1.23.4
 
 COPY --from=builder /usr/local/nginx/modules/ngx_http_proxy_connect_module.so /etc/nginx/modules/ngx_http_proxy_connect_module.so
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
+
+CMD ["nginx", "-g", "daemon off;"]
