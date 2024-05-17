@@ -8,6 +8,8 @@ RUN apt update -qq && apt install -qqy \
     libssl-dev \
     libpcre3-dev \
     zlib1g-dev \
+    libxml2-dev\
+    libxslt-dev\
     git \
     && apt clean && rm -rf /var/lib/apt/lists/*
 
@@ -19,6 +21,7 @@ RUN curl -LSs http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz -O &&\
     git clone https://github.com/chobits/ngx_http_proxy_connect_module /usr/src/ngx_http_proxy_connect_module &&\
     patch -p1 < /usr/src/ngx_http_proxy_connect_module/patch/proxy_connect_rewrite_102101.patch &&\
     git clone https://github.com/shuichiro-endo/socks5-nginx-module-v2.git &&\
+    git clone https://github.com/arut/nginx-dav-ext-module.git /usr/src/nginx-dav-ext-module &&\
     ./configure \
       --add-module=/usr/src/ngx_http_proxy_connect_module \
       --sbin-path=/usr/sbin/nginx \
@@ -27,6 +30,7 @@ RUN curl -LSs http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz -O &&\
       --with-http_v2_module \
       --with-http_ssl_module \
       --with-http_dav_module \
+      --add-module=/usr/src/nginx-dav-ext-module \
       --with-cc-opt='-g -O2 -fstack-protector-strong -Wformat -Werror=format-security -Wp,-D_FORTIFY_SOURCE=2 -fPIC' &&\
     make modules && make && make install &&\
     rm -rf /usr/src
